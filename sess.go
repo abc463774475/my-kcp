@@ -754,18 +754,28 @@ func (s *UDPSession) kcpInput(data []byte) {
 type (
 	// Listener defines a server which will be waiting to accept incoming connections
 	Listener struct {
-		block        BlockCrypt     // block encryption
-		dataShards   int            // FEC data shard
-		parityShards int            // FEC parity shard
-		conn         net.PacketConn // the underlying packet connection
-		ownConn      bool           // true if we created conn internally, false if provided by caller
+		// 加密
+		block BlockCrypt // block encryption
+		// FEC 数据分片
+		dataShards int // FEC data shard
+		// FEC 校验分片
+		parityShards int // FEC parity shard
+		// 内部连接
+		conn net.PacketConn // the underlying packet connection
+		// 是否是内部连接
+		ownConn bool // true if we created conn internally, false if provided by caller
 
-		sessions        map[string]*UDPSession // all sessions accepted by this Listener
-		sessionLock     sync.RWMutex
-		chAccepts       chan *UDPSession // Listen() backlog
-		chSessionClosed chan net.Addr    // session close queue
+		// 所有的连接
+		sessions    map[string]*UDPSession // all sessions accepted by this Listener
+		sessionLock sync.RWMutex
+		// listen backlog 表示 backlog 参数的含义是：当服务器端的 socket 处于监听状态时，已完成连接队列的长度。当已完成连接队列的长度达到 backlog 时，新的连接请求将被拒绝。
+		chAccepts chan *UDPSession // Listen() backlog
+		// session close queue 关闭队列
+		chSessionClosed chan net.Addr // session close queue
 
-		die     chan struct{} // notify the listener has closed
+		// die
+		die chan struct{} // notify the listener has closed
+		// die once
 		dieOnce sync.Once
 
 		// socket error handling
